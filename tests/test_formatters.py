@@ -67,32 +67,32 @@ def test_format_log_basic(formatter):
     assert "line" in record
     assert "file" in record
 
-def test_format_log_with_additional_meta(formatter):
-    """Test log formatting with additional metadata"""
-    additional_meta = {
+def test_format_log_with_meta(formatter):
+    """Test log formatting with metadata"""
+    meta = {
         "request_id": "123",
         "user_id": "456"
     }
     
     log_entry = formatter.format_log(
         "test message",
-        additional_meta=additional_meta
+        meta=meta
     )
     
-    meta = log_entry["meta"]
-    assert meta["request_id"] == "123"
-    assert meta["user_id"] == "456"
+    meta_section = log_entry["meta"]
+    assert meta_section["request_id"] == "123"
+    assert meta_section["user_id"] == "456"
 
-def test_format_log_with_additional_fields(formatter):
-    """Test log formatting with additional fields"""
-    additional_fields = {
+def test_format_log_with_extra(formatter):
+    """Test log formatting with extra fields"""
+    extra = {
         "correlation_id": "789",
         "duration_ms": 150
     }
     
     log_entry = formatter.format_log(
         "test message",
-        additional_fields=additional_fields
+        extra=extra
     )
     
     record = log_entry["record"]
@@ -158,16 +158,16 @@ def test_format_log_with_service(formatter):
 
 def test_format_log_none_values_removed(formatter):
     """Test that None values are removed from log entries"""
-    additional_meta = {
+    meta = {
         "valid_field": "value",
         "none_field": None
     }
     
     log_entry = formatter.format_log(
         "test message",
-        additional_meta=additional_meta
+        meta=meta
     )
     
-    meta = log_entry["meta"]
-    assert "valid_field" in meta
-    assert "none_field" not in meta
+    meta_section = log_entry["meta"]
+    assert "valid_field" in meta_section
+    assert "none_field" not in meta_section

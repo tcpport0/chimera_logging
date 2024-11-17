@@ -9,7 +9,7 @@ def send_test_logs():
     # Send some test logs
     log_entry = logger.info(
         "Test message",
-        additional_fields={"test_id": "123"}
+        extra={"test_id": "123"}
     )
     print("\nLog entry that will be sent to Firehose:")
     print(log_entry)
@@ -20,7 +20,7 @@ def send_test_logs():
         log_entry = logger.exception(
             "Test error occurred",
             exc_info=e,
-            additional_fields={"test_id": "123"}
+            extra={"test_id": "123"}
         )
         print("\nError log entry that will be sent to Firehose:")
         print(log_entry)

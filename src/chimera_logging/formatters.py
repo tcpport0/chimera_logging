@@ -39,13 +39,13 @@ class ChimeraFormatter:
         self,
         message: str,
         level: str = "INFO",
-        additional_meta: Optional[Dict[str, Any]] = None,
-        additional_fields: Optional[Dict[str, Any]] = None,
+        meta: Optional[Dict[str, Any]] = None,
+        extra: Optional[Dict[str, Any]] = None,
         exc_info: Optional[BaseException] = None
     ) -> Dict[str, Any]:
         """Format a log message with metadata"""
         try:
-            meta = {
+            meta_dict = {
                 "timestamp": time.time(),
                 "tag": self.tag,
                 "environment": self.environment,
@@ -54,14 +54,14 @@ class ChimeraFormatter:
             
             # Only add service if it's not None
             if self._service is not None:
-                meta["service"] = self._service
+                meta_dict["service"] = self._service
             
             if self._container_info:
-                meta["container"] = self._container_info
+                meta_dict["container"] = self._container_info
                 
-            if additional_meta:
+            if meta:
                 try:
-                    meta.update(additional_meta)
+                    meta_dict.update(meta)
                 except Exception:
                     pass
 
@@ -71,9 +71,9 @@ class ChimeraFormatter:
                 **get_caller_info()
             }
             
-            if additional_fields:
+            if extra:
                 try:
-                    record.update(additional_fields)
+                    record.update(extra)
                 except Exception:
                     pass
 
@@ -96,7 +96,7 @@ class ChimeraFormatter:
                     }
 
             return remove_none_values({
-                "meta": meta,
+                "meta": meta_dict,
                 "record": record
             })
             

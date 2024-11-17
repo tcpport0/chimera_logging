@@ -35,10 +35,14 @@ from chimera_logging import create_logger
 # Create a logger with a tag
 logger = create_logger("myapp.component")
 
+# Or use environment variable for tag
+# export CHIMERA_TAG="myapp.component"
+logger = create_logger()  # Will use CHIMERA_TAG from environment
+
 # Log messages at different levels
 logger.info("Application started")
-logger.warning("Resource running low", additional_fields={"resource": "memory", "usage": 85})
-logger.error("Operation failed", additional_meta={"operation": "data_sync"})
+logger.warning("Resource running low", meta={"component": "memory"}, extra={"usage": 85})
+logger.error("Operation failed", meta={"operation": "data_sync"})
 
 # Log exceptions with full stack traces
 try:
@@ -56,6 +60,7 @@ The logger can be configured using environment variables:
 - `AWS_SECRET_ACCESS_KEY`: AWS secret key
 
 ### Optional Configuration
+- `CHIMERA_TAG` or `LOG_TAG`: Default tag for all loggers. If set, you can create loggers without explicitly providing a tag.
 - `CHIMERA_LOG_LEVEL`: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL). Default: INFO
 - `CHIMERA_STREAM_NAME`: Firehose stream name. Default: chimera-log-fh
 - `AWS_REGION`: AWS region. Default: us-west-2
@@ -65,6 +70,7 @@ The logger can be configured using environment variables:
 - `CONTAINER_ID`: Container ID (auto-detected if running in Docker)
 - `CONTAINER_TAG`: Container image tag
 - `CONTAINER_VERSION`: Container version
+- `SERVICE_NAME` or `SERVICE`: Service name for additional context (also supports `APP_NAME`, `APPLICATION`)
 
 ## Local vs Firehose Logging
 
@@ -78,13 +84,49 @@ If Firehose logging is not possible, it automatically falls back to local loggin
 
 ## Advanced Usage
 
+### Tag Configuration
+
+You can configure the logger's tag in two ways:
+
+1. Via environment variable:
+```bash
+export CHIMERA_TAG="myapp.component"
+logger = create_logger()  # Uses CHIMERA_TAG from environment
+```
+
+2. Via parameter:
+```python
+logger = create_logger("myapp.component")  # Explicitly set tag
+```
+
+If both are set, the parameter takes precedence over the environment variable.
+
 ### Additional Context
 
+The logger supports two types of additional context:
+
+1. `meta`: Override or add to the metadata section
 ```python
 logger.info(
     "User action completed",
-    additional_meta={"source": "auth_service"},
-    additional_fields={"user_id": 123, "action": "login"}
+    meta={"source": "auth_service"}
+)
+```
+
+2. `extra`: Add custom fields to the record section
+```python
+logger.info(
+    "User action completed",
+    extra={"user_id": 123, "action": "login"}
+)
+```
+
+You can use both together:
+```python
+logger.info(
+    "User action completed",
+    meta={"source": "auth_service"},
+    extra={"user_id": 123, "action": "login"}
 )
 ```
 
@@ -116,9 +158,15 @@ from chimera_logging import create_logger
 logger = create_logger("myapp.worker")
 
 def worker(thread_id):
-    logger.info(f"Worker started", additional_fields={"thread_id": thread_id})
+    logger.info(
+        "Worker started",
+        extra={"thread_id": thread_id}
+    )
     # ... do work ...
-    logger.info(f"Worker completed", additional_fields={"thread_id": thread_id})
+    logger.info(
+        "Worker completed",
+        extra={"thread_id": thread_id}
+    )
 
 # Create multiple threads
 threads = [threading.Thread(target=worker, args=(i,)) for i in range(5)]

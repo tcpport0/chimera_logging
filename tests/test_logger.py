@@ -97,21 +97,21 @@ class TestChimeraLogger:
             logger = ChimeraLogger(tag="test-tag")
             mock_formatter.format_log.return_value = sample_log_entry
             
-            additional_meta = {"request_id": "123"}
-            additional_fields = {"correlation_id": "456"}
+            meta = {"request_id": "123"}
+            extra = {"correlation_id": "456"}
             
             logger.log(
                 "test message",
                 "INFO",
-                additional_meta=additional_meta,
-                additional_fields=additional_fields
+                meta=meta,
+                extra=extra
             )
             
             mock_formatter.format_log.assert_called_once_with(
                 "test message",
                 "INFO",
-                additional_meta=additional_meta,
-                additional_fields=additional_fields
+                meta=meta,
+                extra=extra
             )
             
     def test_log_error_handling(self, mock_formatter, mock_firehose_handler):

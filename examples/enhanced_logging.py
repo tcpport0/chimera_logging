@@ -19,7 +19,7 @@ def simulate_work(logger, thread_id):
     try:
         # Log some info
         logger.info(f"Starting work in thread {thread_id}", 
-                   additional_fields={"thread_id": thread_id})
+                   extra={"thread_id": thread_id})
         
         # Simulate processing
         time.sleep(0.5)
@@ -27,7 +27,7 @@ def simulate_work(logger, thread_id):
         # Simulate some warnings
         if thread_id % 2 == 0:
             logger.warning(f"Process {thread_id} running slower than expected",
-                         additional_meta={"performance_impact": "medium"})
+                         meta={"performance_impact": "medium"})
             
         # Simulate an error in some threads
         if thread_id % 3 == 0:
@@ -39,7 +39,7 @@ def simulate_work(logger, thread_id):
         # Log the exception with full stack trace
         logger.exception("Error during processing", 
                         exc_info=e,
-                        additional_fields={
+                        extra={
                             "thread_id": thread_id,
                             "status": "failed"
                         })
@@ -76,13 +76,13 @@ def main():
     
     # Log final status with both loggers
     env_logger.info("Environment tagged logger completed", 
-                   additional_meta={
+                   meta={
                        "total_threads": len(threads) // 2,
                        "tag_source": "environment"
                    })
     
     param_logger.info("Parameter tagged logger completed",
-                     additional_meta={
+                     meta={
                          "total_threads": len(threads) // 2,
                          "tag_source": "parameter"
                      })

@@ -18,8 +18,8 @@ logger.warning("Warning message")
 # Logging with additional context
 logger.info(
     "User logged in",
-    additional_meta={'source': 'auth_service'},
-    additional_fields={'user_id': 123, 'login_method': 'oauth'}
+    meta={'source': 'auth_service'},
+    extra={'user_id': 123, 'login_method': 'oauth'}
 )
 
 # Error logging with exception information
@@ -29,14 +29,14 @@ except Exception as e:
     logger.exception(
         "Division by zero error",
         exc_info=e,
-        additional_fields={'operation': 'calculation'}
+        extra={'operation': 'calculation'}
     )
 
 # Logging with different levels and contexts
 logger.error(
     "Database connection failed",
-    additional_meta={'component': 'database'},
-    additional_fields={
+    meta={'component': 'database'},
+    extra={
         'host': 'db.example.com',
         'port': 5432,
         'retry_count': 3
